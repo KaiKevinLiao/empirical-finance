@@ -1,0 +1,216 @@
+{smcl}
+{com}{sf}{ul off}{txt}{.-}
+      name:  {res}<unnamed>
+       {txt}log:  {res}/Users/kailiao/Downloads/problem 1.smcl
+  {txt}log type:  {res}smcl
+ {txt}opened on:  {res}14 Nov 2022, 15:10:34
+
+{com}. do "/var/folders/rt/kyq9qr_50fzfcbfdhh8vgydc0000gn/T//SD95790.000000"
+{txt}
+{com}. import excel "/Users/kailiao/Downloads/ps3.xlsx", sheet("Sheet1") cellrange(A2:I266) firstrow clear
+{res}{text}(9 vars, 264 obs)
+
+{com}. 
+. rename D Confidence_individual
+{res}{txt}
+{com}. 
+. rename Confidence Confidence_institutional
+{res}{txt}
+{com}. 
+. destring Confidence_institutional Confidence_individual, replace
+{txt}Confidence_institutional: all characters numeric; {res}replaced {txt}as {res}double
+{txt}(118 missing values generated)
+{res}{txt}Confidence_individual: all characters numeric; {res}replaced {txt}as {res}double
+{txt}(135 missing values generated)
+{res}{txt}
+{com}. 
+. gen Con_ins_lag1 = Confidence_institutional[_n-1]
+{txt}(118 missing values generated)
+
+{com}. 
+. gen Con_ind_lag1 = Confidence_individual[_n-1]
+{txt}(135 missing values generated)
+
+{com}. 
+. destring IndexLevel Con_ind_lag1 Dividends Earnings ConsumerPriceIndes Longinterestrate Con_ins_lag1, replace
+{txt}IndexLevel already numeric; no {res}replace
+{txt}Con_ind_lag1 already numeric; no {res}replace
+{txt}Dividends already numeric; no {res}replace
+{txt}Earnings: all characters numeric; {res}replaced {txt}as {res}double
+{txt}(3 missing values generated)
+{res}{txt}ConsumerPriceIndes already numeric; no {res}replace
+{txt}Longinterestrate already numeric; no {res}replace
+{txt}Con_ins_lag1 already numeric; no {res}replace
+{txt}
+{com}. 
+. gen index_pct=100*(IndexLevel[_n]-IndexLevel[_n-1])/IndexLevel[_n-1]
+{txt}(2 missing values generated)
+
+{com}. 
+. reg index_pct Con_ind_lag1 Con_ins_lag1 Dividends Earnings ConsumerPriceIndes Longinterestrate 
+
+{txt}      Source {c |}       SS           df       MS      Number of obs   ={res}       126
+{txt}{hline 13}{c +}{hline 34}   F(6, 119)       = {res}     0.88
+{txt}       Model {c |} {res} 94.5579842         6   15.759664   {txt}Prob > F        ={res}    0.5122
+{txt}    Residual {c |} {res} 2132.10754       119  17.9168701   {txt}R-squared       ={res}    0.0425
+{txt}{hline 13}{c +}{hline 34}   Adj R-squared   ={res}   -0.0058
+{txt}       Total {c |} {res} 2226.66553       125  17.8133242   {txt}Root MSE        =   {res} 4.2328
+
+{txt}{hline 19}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}         index_pct{col 20}{c |}      Coef.{col 32}   Std. Err.{col 44}      t{col 52}   P>|t|{col 60}     [95% Con{col 73}f. Interval]
+{hline 19}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 6}Con_ind_lag1 {c |}{col 20}{res}{space 2}-.0433008{col 32}{space 2} .0942386{col 43}{space 1}   -0.46{col 52}{space 3}0.647{col 60}{space 4}-.2299026{col 73}{space 3}  .143301
+{txt}{space 6}Con_ins_lag1 {c |}{col 20}{res}{space 2}-.0009007{col 32}{space 2} .0811736{col 43}{space 1}   -0.01{col 52}{space 3}0.991{col 60}{space 4}-.1616325{col 73}{space 3} .1598312
+{txt}{space 9}Dividends {c |}{col 20}{res}{space 2}-.3370315{col 32}{space 2} .1977328{col 43}{space 1}   -1.70{col 52}{space 3}0.091{col 60}{space 4}-.7285623{col 73}{space 3} .0544992
+{txt}{space 10}Earnings {c |}{col 20}{res}{space 2} .0260484{col 32}{space 2} .0234437{col 43}{space 1}    1.11{col 52}{space 3}0.269{col 60}{space 4}-.0203725{col 73}{space 3} .0724693
+{txt}ConsumerPriceIndes {c |}{col 20}{res}{space 2} .0366673{col 32}{space 2} .0695949{col 43}{space 1}    0.53{col 52}{space 3}0.599{col 60}{space 4}-.1011375{col 73}{space 3} .1744721
+{txt}{space 2}Longinterestrate {c |}{col 20}{res}{space 2}-.3344914{col 32}{space 2} .8750147{col 43}{space 1}   -0.38{col 52}{space 3}0.703{col 60}{space 4}-2.067108{col 73}{space 3} 1.398125
+{txt}{space 13}_cons {c |}{col 20}{res}{space 2} 3.866037{col 32}{space 2} 16.56845{col 43}{space 1}    0.23{col 52}{space 3}0.816{col 60}{space 4}-28.94116{col 73}{space 3} 36.67323
+{txt}{hline 19}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}{txt}
+{com}. 
+. gen datee=ym(year, month)
+{txt}(1 missing value generated)
+
+{com}. 
+. tset datee
+{res}{txt}{col 9}time variable:  {res}{col 25}datee, 357 to 619
+{txt}{col 17}delta:  {res}1 unit
+{txt}
+{com}. 
+. vec index_pct Confidence_individual
+
+{res}{txt}Vector error-correction model
+
+{col 1}Sample:  {res}500 - 619 {txt}{col 49}Number of obs{col 67}= {res}       120
+{txt}{col 49}AIC{col 67}=  {res} 9.718321
+{txt}Log likelihood = {res}-574.0993{txt}{col 49}HQIC{col 67}=  {res} 9.803222
+{txt}Det(Sigma_ml){col 16}= {res}  49.0366{txt}{col 49}SBIC{col 67}=  {res} 9.927383
+
+{col 1}{text}Equation        {col 18}  Parms{col 26}     RMSE {col 37}   R-sq  {col 47}   chi2   {col 58} P>chi2
+{res}{col 1}{text}{hline 17}{hline 8}{hline 11}{hline 10}{hline 11}{hline 7}
+{col 1}{text}D_index_pct     {col 18}{result}     4{col 26}{space 2} 4.21895{col 37}{space 1} 0.3585{col 47} 64.83805{col 58} 0.0000
+{col 1}{text}D_Confidence_i~l{col 18}{result}     4{col 26}{space 2} 1.72795{col 37}{space 1} 0.0412{col 47} 4.983544{col 58} 0.2890
+{col 1}{text}{hline 17}{hline 8}{hline 11}{hline 10}{hline 11}{hline 7}
+{res}
+{txt}{hline 24}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 25}{c |}      Coef.{col 37}   Std. Err.{col 49}      z{col 57}   P>|z|{col 65}     [95% Con{col 78}f. Interval]
+{hline 24}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}D_index_pct             {txt}{c |}
+{space 19}_ce1 {c |}
+{space 20}L1. {c |}{col 25}{res}{space 2}-.7520742{col 37}{space 2} .1170616{col 48}{space 1}   -6.42{col 57}{space 3}0.000{col 65}{space 4}-.9815108{col 78}{space 3}-.5226376
+{txt}{space 23} {c |}
+{space 14}index_pct {c |}
+{space 20}LD. {c |}{col 25}{res}{space 2} .0253107{col 37}{space 2} .0971901{col 48}{space 1}    0.26{col 57}{space 3}0.795{col 65}{space 4}-.1651784{col 78}{space 3} .2157997
+{txt}{space 23} {c |}
+{space 2}Confidence_individual {c |}
+{space 20}LD. {c |}{col 25}{res}{space 2}-.1304984{col 37}{space 2} .2272729{col 48}{space 1}   -0.57{col 57}{space 3}0.566{col 65}{space 4}-.5759451{col 78}{space 3} .3149483
+{txt}{space 23} {c |}
+{space 18}_cons {c |}{col 25}{res}{space 2}-.0156153{col 37}{space 2} .3859288{col 48}{space 1}   -0.04{col 57}{space 3}0.968{col 65}{space 4}-.7720219{col 78}{space 3} .7407913
+{txt}{hline 24}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}D_Confidence_individual {txt}{c |}
+{space 19}_ce1 {c |}
+{space 20}L1. {c |}{col 25}{res}{space 2} .0875544{col 37}{space 2} .0479449{col 48}{space 1}    1.83{col 57}{space 3}0.068{col 65}{space 4}-.0064159{col 78}{space 3} .1815247
+{txt}{space 23} {c |}
+{space 14}index_pct {c |}
+{space 20}LD. {c |}{col 25}{res}{space 2}-.0129218{col 37}{space 2} .0398061{col 48}{space 1}   -0.32{col 57}{space 3}0.745{col 65}{space 4}-.0909404{col 78}{space 3} .0650968
+{txt}{space 23} {c |}
+{space 2}Confidence_individual {c |}
+{space 20}LD. {c |}{col 25}{res}{space 2}-.0191342{col 37}{space 2} .0930841{col 48}{space 1}   -0.21{col 57}{space 3}0.837{col 65}{space 4}-.2015757{col 78}{space 3} .1633074
+{txt}{space 23} {c |}
+{space 18}_cons {c |}{col 25}{res}{space 2}-.1341325{col 37}{space 2} .1580648{col 48}{space 1}   -0.85{col 57}{space 3}0.396{col 65}{space 4}-.4439339{col 78}{space 3} .1756688
+{txt}{hline 24}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+
+Cointegrating equations
+{res}
+{col 1}{text}Equation        {col 18}  Parms{col 26}   chi2   {col 37} P>chi2
+{res}{col 1}{text}{hline 17}{hline 8}{hline 11}{hline 7}
+{col 1}{text}_ce1            {col 18}{result}     1{col 26}  1.71221{col 37} 0.1907
+{col 1}{text}{hline 17}{hline 8}{hline 11}{hline 7}
+{res}
+{txt}Identification:  beta is exactly identified
+
+{col 18}Johansen normalization restriction imposed
+{res}{txt}{hline 22}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}                 beta{col 23}{c |}      Coef.{col 35}   Std. Err.{col 47}      z{col 55}   P>|z|{col 63}     [95% Con{col 76}f. Interval]
+{hline 22}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}_ce1                  {txt}{c |}
+{space 12}index_pct {c |}{col 23}{res}{space 2}        1{col 35}{space 2}        .{col 46}{space 1}       .{col 55}{space 3}    .{col 63}{space 4}        .{col 76}{space 3}        .
+{txt}Confidence_individual {c |}{col 23}{res}{space 2}-.1013151{col 35}{space 2} .0774276{col 46}{space 1}   -1.31{col 55}{space 3}0.191{col 63}{space 4}-.2530705{col 76}{space 3} .0504402
+{txt}{space 16}_cons {c |}{col 23}{res}{space 2} 8.282046{col 35}{space 2}        .{col 46}{space 1}       .{col 55}{space 3}    .{col 63}{space 4}        .{col 76}{space 3}        .
+{txt}{hline 22}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+
+{com}. 
+. vec Confidence_individual index_pct 
+
+{res}{txt}Vector error-correction model
+
+{col 1}Sample:  {res}500 - 619 {txt}{col 49}Number of obs{col 67}= {res}       120
+{txt}{col 49}AIC{col 67}=  {res} 9.718321
+{txt}Log likelihood = {res}-574.0993{txt}{col 49}HQIC{col 67}=  {res} 9.803222
+{txt}Det(Sigma_ml){col 16}= {res}  49.0366{txt}{col 49}SBIC{col 67}=  {res} 9.927383
+
+{col 1}{text}Equation        {col 18}  Parms{col 26}     RMSE {col 37}   R-sq  {col 47}   chi2   {col 58} P>chi2
+{res}{col 1}{text}{hline 17}{hline 8}{hline 11}{hline 10}{hline 11}{hline 7}
+{col 1}{text}D_Confidence_i~l{col 18}{result}     4{col 26}{space 2} 1.72795{col 37}{space 1} 0.0412{col 47} 4.983544{col 58} 0.2890
+{col 1}{text}D_index_pct     {col 18}{result}     4{col 26}{space 2} 4.21895{col 37}{space 1} 0.3585{col 47} 64.83805{col 58} 0.0000
+{col 1}{text}{hline 17}{hline 8}{hline 11}{hline 10}{hline 11}{hline 7}
+{res}
+{txt}{hline 24}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 25}{c |}      Coef.{col 37}   Std. Err.{col 49}      z{col 57}   P>|z|{col 65}     [95% Con{col 78}f. Interval]
+{hline 24}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}D_Confidence_individual {txt}{c |}
+{space 19}_ce1 {c |}
+{space 20}L1. {c |}{col 25}{res}{space 2}-.0088706{col 37}{space 2} .0048575{col 48}{space 1}   -1.83{col 57}{space 3}0.068{col 65}{space 4}-.0183912{col 78}{space 3}   .00065
+{txt}{space 23} {c |}
+{space 2}Confidence_individual {c |}
+{space 20}LD. {c |}{col 25}{res}{space 2}-.0191342{col 37}{space 2} .0930841{col 48}{space 1}   -0.21{col 57}{space 3}0.837{col 65}{space 4}-.2015757{col 78}{space 3} .1633074
+{txt}{space 23} {c |}
+{space 14}index_pct {c |}
+{space 20}LD. {c |}{col 25}{res}{space 2}-.0129218{col 37}{space 2} .0398061{col 48}{space 1}   -0.32{col 57}{space 3}0.745{col 65}{space 4}-.0909404{col 78}{space 3} .0650968
+{txt}{space 23} {c |}
+{space 18}_cons {c |}{col 25}{res}{space 2}-.1341325{col 37}{space 2} .1580648{col 48}{space 1}   -0.85{col 57}{space 3}0.396{col 65}{space 4}-.4439339{col 78}{space 3} .1756688
+{txt}{hline 24}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}D_index_pct             {txt}{c |}
+{space 19}_ce1 {c |}
+{space 20}L1. {c |}{col 25}{res}{space 2} .0761965{col 37}{space 2} .0118601{col 48}{space 1}    6.42{col 57}{space 3}0.000{col 65}{space 4} .0529511{col 78}{space 3} .0994419
+{txt}{space 23} {c |}
+{space 2}Confidence_individual {c |}
+{space 20}LD. {c |}{col 25}{res}{space 2}-.1304984{col 37}{space 2} .2272729{col 48}{space 1}   -0.57{col 57}{space 3}0.566{col 65}{space 4}-.5759451{col 78}{space 3} .3149483
+{txt}{space 23} {c |}
+{space 14}index_pct {c |}
+{space 20}LD. {c |}{col 25}{res}{space 2} .0253107{col 37}{space 2} .0971901{col 48}{space 1}    0.26{col 57}{space 3}0.795{col 65}{space 4}-.1651784{col 78}{space 3} .2157997
+{txt}{space 23} {c |}
+{space 18}_cons {c |}{col 25}{res}{space 2}-.0156153{col 37}{space 2} .3859288{col 48}{space 1}   -0.04{col 57}{space 3}0.968{col 65}{space 4}-.7720219{col 78}{space 3} .7407913
+{txt}{hline 24}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+
+Cointegrating equations
+{res}
+{col 1}{text}Equation        {col 18}  Parms{col 26}   chi2   {col 37} P>chi2
+{res}{col 1}{text}{hline 17}{hline 8}{hline 11}{hline 7}
+{col 1}{text}_ce1            {col 18}{result}     1{col 26} 48.17257{col 37} 0.0000
+{col 1}{text}{hline 17}{hline 8}{hline 11}{hline 7}
+{res}
+{txt}Identification:  beta is exactly identified
+
+{col 18}Johansen normalization restriction imposed
+{res}{txt}{hline 22}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}                 beta{col 23}{c |}      Coef.{col 35}   Std. Err.{col 47}      z{col 55}   P>|z|{col 63}     [95% Con{col 76}f. Interval]
+{hline 22}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}_ce1                  {txt}{c |}
+Confidence_individual {c |}{col 23}{res}{space 2}        1{col 35}{space 2}        .{col 46}{space 1}       .{col 55}{space 3}    .{col 63}{space 4}        .{col 76}{space 3}        .
+{txt}{space 12}index_pct {c |}{col 23}{res}{space 2}-9.870193{col 35}{space 2} 1.422086{col 46}{space 1}   -6.94{col 55}{space 3}0.000{col 63}{space 4}-12.65743{col 76}{space 3}-7.082956
+{txt}{space 16}_cons {c |}{col 23}{res}{space 2}-81.74539{col 35}{space 2}        .{col 46}{space 1}       .{col 55}{space 3}    .{col 63}{space 4}        .{col 76}{space 3}        .
+{txt}{hline 22}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+
+{com}. 
+{txt}end of do-file
+
+{com}. log close
+      {txt}name:  {res}<unnamed>
+       {txt}log:  {res}/Users/kailiao/Downloads/problem 1.smcl
+  {txt}log type:  {res}smcl
+ {txt}closed on:  {res}14 Nov 2022, 15:10:53
+{txt}{.-}
+{smcl}
+{txt}{sf}{ul off}
